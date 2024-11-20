@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1313</width>
+    <height>650</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #2d3436;
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,8,0,0">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="videoLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LayoutDirection::LeftToRight</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="Info">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);</string>
+          </property>
+          <property name="text">
+           <string>Info</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1313</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QMenuBar
+{
+	color: black;
+	background-color: white;
+}
+QMenu
+{
+	color: #dfe6e9;
+	background-color: #2d3436;
+	border: 1px solid gray;
+}
+QAction
+{
+	color: #dfe6e9;
+	border: 1px solid #dfe6e9;
+}</string>
+   </property>
+   <widget class="QMenu" name="menuOption">
+    <property name="styleSheet">
+     <string notr="true">background-color: white;
+color: rgb(0, 0, 0);</string>
+    </property>
+    <property name="title">
+     <string>Options</string>
+    </property>
+    <addaction name="action_Option_Preview"/>
+    <addaction name="separator"/>
+    <addaction name="action_Option_Video_Capture_Filter"/>
+    <addaction name="action_Option_Video_Capture_pin"/>
+   </widget>
+   <widget class="QMenu" name="menuDevices">
+    <property name="styleSheet">
+     <string notr="true">background-color: white;
+color: rgb(0, 0, 0);</string>
+    </property>
+    <property name="title">
+     <string>Devices</string>
+    </property>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuFile">
+    <property name="styleSheet">
+     <string notr="true">background-color: white;
+border-color: gray;
+color: rgb(0, 0, 0);</string>
+    </property>
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="action_File_Set_Capture_Directory"/>
+    <addaction name="action_File_Set_Photo_Directory"/>
+    <addaction name="separator"/>
+    <addaction name="action_File_Save_Captured_Video_As"/>
+    <addaction name="separator"/>
+    <addaction name="action_File_Exit"/>
+   </widget>
+   <widget class="QMenu" name="menuCapture">
+    <property name="styleSheet">
+     <string notr="true">background-color: white;
+color: rgb(0, 0, 0);</string>
+    </property>
+    <property name="title">
+     <string>Capture</string>
+    </property>
+    <widget class="QMenu" name="menu_Capture_Master_Stream">
+     <property name="title">
+      <string>Master Stream</string>
+     </property>
+     <addaction name="action_Capture_Master_Stream_None"/>
+     <addaction name="action_Capture_Master_Stream_Audio"/>
+     <addaction name="action_Capture_Master_Stream_Video"/>
+    </widget>
+    <addaction name="action_Capture_Start_Capture"/>
+    <addaction name="action_Capture_Stop_Capture_ESC"/>
+    <addaction name="separator"/>
+    <addaction name="action_Capture_Capture_Audio"/>
+    <addaction name="menu_Capture_Master_Stream"/>
+    <addaction name="action_Capture_Set_Frame_Rate"/>
+    <addaction name="action_Capture_Set_Time_Limit"/>
+    <addaction name="action_Capture_Set_Video_Compressor"/>
+    <addaction name="separator"/>
+    <addaction name="action_Capture_Capture_Buffer_Data"/>
+    <addaction name="separator"/>
+    <addaction name="action_Capture_Capture_Prevciew_Picture"/>
+   </widget>
+   <widget class="QMenu" name="menuPhoto">
+    <property name="styleSheet">
+     <string notr="true">background-color: white;
+color: rgb(0, 0, 0);</string>
+    </property>
+    <property name="title">
+     <string>Photo</string>
+    </property>
+    <addaction name="action_Photo_Start_Photo_F3"/>
+    <addaction name="action_Photo_Set_Photo_Format"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="styleSheet">
+     <string notr="true">background-color: white;
+color: rgb(0, 0, 0);</string>
+    </property>
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="action_Help_About"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuDevices"/>
+   <addaction name="menuOption"/>
+   <addaction name="menuCapture"/>
+   <addaction name="menuPhoto"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="action_Option_Preview">
+   <property name="text">
+    <string>Preview</string>
+   </property>
+  </action>
+  <action name="actionSelect">
+   <property name="text">
+    <string>Select</string>
+   </property>
+  </action>
+  <action name="actionView">
+   <property name="text">
+    <string>View</string>
+   </property>
+  </action>
+  <action name="action_File_Open">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="action_File_Set_Capture_Directory">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Set Capture Directory</string>
+   </property>
+  </action>
+  <action name="action_File_Set_Photo_Directory">
+   <property name="text">
+    <string>Set Photo Directory</string>
+   </property>
+  </action>
+  <action name="action_File_Save_Captured_Video_As">
+   <property name="text">
+    <string>Save Captured Video As...</string>
+   </property>
+  </action>
+  <action name="action_File_Exit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="action_Devices_Cameras">
+   <property name="text">
+    <string>Cameras</string>
+   </property>
+  </action>
+  <action name="action_Devices_Audios">
+   <property name="text">
+    <string>Audios</string>
+   </property>
+  </action>
+  <action name="action_Option_Video_Capture_Filter">
+   <property name="text">
+    <string>Video Capture Filter...</string>
+   </property>
+  </action>
+  <action name="action_Option_Video_Capture_pin">
+   <property name="text">
+    <string>Video Capture Pin...</string>
+   </property>
+  </action>
+  <action name="action_Capture_Start_Capture">
+   <property name="text">
+    <string>Start Capture</string>
+   </property>
+  </action>
+  <action name="action_Capture_Stop_Capture_ESC">
+   <property name="text">
+    <string>Stop Capture  ESC</string>
+   </property>
+  </action>
+  <action name="action_Capture_Capture_Audio">
+   <property name="text">
+    <string>Capture Audio</string>
+   </property>
+  </action>
+  <action name="action_Capture_Master_Stream_None">
+   <property name="text">
+    <string>None</string>
+   </property>
+  </action>
+  <action name="action_Capture_Master_Stream_Audio">
+   <property name="text">
+    <string>Audio</string>
+   </property>
+  </action>
+  <action name="action_Capture_Master_Stream_Video">
+   <property name="text">
+    <string>Video</string>
+   </property>
+  </action>
+  <action name="action_Capture_Set_Frame_Rate">
+   <property name="text">
+    <string>Set Frame Rate...</string>
+   </property>
+  </action>
+  <action name="action_Capture_Set_Time_Limit">
+   <property name="text">
+    <string>Set Time Limit...</string>
+   </property>
+  </action>
+  <action name="action_Capture_Set_Video_Compressor">
+   <property name="text">
+    <string>Set Video Compressor...</string>
+   </property>
+  </action>
+  <action name="action_Capture_Capture_Buffer_Data">
+   <property name="text">
+    <string>Capture Buffer Data...</string>
+   </property>
+  </action>
+  <action name="action_Capture_Capture_Prevciew_Picture">
+   <property name="text">
+    <string>Capture Prevciew Picture...</string>
+   </property>
+  </action>
+  <action name="action_Photo_Start_Photo_F3">
+   <property name="text">
+    <string>Start Photo  F3</string>
+   </property>
+  </action>
+  <action name="action_Photo_Set_Photo_Format">
+   <property name="text">
+    <string>Set Photo Format</string>
+   </property>
+  </action>
+  <action name="action_Help_About">
+   <property name="text">
+    <string>About...</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
