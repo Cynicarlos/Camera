@@ -60,7 +60,7 @@
         <item>
          <widget class="QLabel" name="videoLabel">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -142,7 +142,6 @@ color: rgb(0, 0, 0);</string>
     <property name="title">
      <string>Options</string>
     </property>
-    <addaction name="action_Option_Preview"/>
     <addaction name="separator"/>
     <addaction name="action_Option_Video_Capture_Filter"/>
     <addaction name="action_Option_Video_Capture_pin"/>
@@ -169,7 +168,6 @@ color: rgb(0, 0, 0);</string>
     <addaction name="action_File_Set_Capture_Directory"/>
     <addaction name="action_File_Set_Photo_Directory"/>
     <addaction name="separator"/>
-    <addaction name="action_File_Save_Captured_Video_As"/>
     <addaction name="separator"/>
     <addaction name="action_File_Exit"/>
    </widget>
@@ -189,8 +187,9 @@ color: rgb(0, 0, 0);</string>
      <addaction name="action_Capture_Master_Stream_Audio"/>
      <addaction name="action_Capture_Master_Stream_Video"/>
     </widget>
+    <addaction name="action_Capture_Capture_Image"/>
     <addaction name="action_Capture_Start_Capture"/>
-    <addaction name="action_Capture_Stop_Capture_ESC"/>
+    <addaction name="action_Capture_Stop_Capture"/>
     <addaction name="separator"/>
     <addaction name="action_Capture_Capture_Audio"/>
     <addaction name="menu_Capture_Master_Stream"/>
@@ -200,7 +199,6 @@ color: rgb(0, 0, 0);</string>
     <addaction name="separator"/>
     <addaction name="action_Capture_Capture_Buffer_Data"/>
     <addaction name="separator"/>
-    <addaction name="action_Capture_Capture_Prevciew_Picture"/>
    </widget>
    <widget class="QMenu" name="menuPhoto">
     <property name="styleSheet">
@@ -231,8 +229,17 @@ color: rgb(0, 0, 0);</string>
    <addaction name="menuHelp"/>
   </widget>
   <action name="action_Option_Preview">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Preview</string>
+   </property>
+   <property name="visible">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionSelect">
@@ -295,12 +302,12 @@ color: rgb(0, 0, 0);</string>
   </action>
   <action name="action_Capture_Start_Capture">
    <property name="text">
-    <string>Start Capture</string>
+    <string>Start Capture Video</string>
    </property>
   </action>
-  <action name="action_Capture_Stop_Capture_ESC">
+  <action name="action_Capture_Stop_Capture">
    <property name="text">
-    <string>Stop Capture  ESC</string>
+    <string>Stop Capture Video</string>
    </property>
   </action>
   <action name="action_Capture_Capture_Audio">
@@ -350,7 +357,7 @@ color: rgb(0, 0, 0);</string>
   </action>
   <action name="action_Photo_Start_Photo_F3">
    <property name="text">
-    <string>Start Photo  F3</string>
+    <string>Start Photo</string>
    </property>
   </action>
   <action name="action_Photo_Set_Photo_Format">
@@ -361,6 +368,11 @@ color: rgb(0, 0, 0);</string>
   <action name="action_Help_About">
    <property name="text">
     <string>About...</string>
+   </property>
+  </action>
+  <action name="action_Capture_Capture_Image">
+   <property name="text">
+    <string>Capture Image</string>
    </property>
   </action>
  </widget>
