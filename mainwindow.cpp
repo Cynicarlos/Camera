@@ -15,24 +15,27 @@ MainWindow::MainWindow(QWidget *parent)
     // 创建菜单栏
     menuBar = ui->menubar;
     videoLabel = ui->videoLabel;
-    //videoLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+    videoLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+    videoLabel->setScaledContents(true); // 保持图片比例
+    videoLabel->setAlignment(Qt::AlignCenter); // 居中显示videoLabel = ui->videoLabel;
+
 }
 
 MainWindow::~MainWindow()
 {
-    cap.release(); // 释放摄像头资源
+    cap.release(); // 释放摄像头资源lk.
     delete ui;
 }
 
 void MainWindow::init(){
     //Files
-    action_File_Set_Capture_Directory = ui->action_File_Set_Capture_Directory;
-    action_File_Set_Photo_Directory = ui->action_File_Set_Photo_Directory;
+    action_File_Set_Capture_Directory = ui->action_File_Set_Video_Directory;
+    action_File_Set_Photo_Directory = ui->action_File_Set_Image_Directory;
     action_File_Save_Captured_Video_As = ui->action_File_Save_Captured_Video_As;
     action_File_Exit = ui->action_File_Exit;
 
     //Options
-    action_Option_Preview = ui->action_Option_Preview;
+    //action_Option_Preview = ui->action_Option_Preview;
     action_Option_Video_Capture_Filter = ui->action_Option_Video_Capture_Filter;
     action_Option_Video_Capture_pin = ui->action_Option_Video_Capture_pin;
 
@@ -47,11 +50,11 @@ void MainWindow::init(){
     action_Capture_Set_Time_Limit = ui->action_Capture_Set_Time_Limit;
     action_Capture_Set_Video_Compressor = ui->action_Capture_Set_Video_Compressor;
 
-    action_Capture_Start_Capture = ui->action_Capture_Start_Capture;
-    action_Capture_Start_Capture->setShortcut(QKeySequence(Qt::Key_F3));
+    action_Capture_Start_Recording = ui->action_Capture_Start_Recording;
+    action_Capture_Start_Recording->setShortcut(QKeySequence(Qt::Key_F3));
 
-    action_Capture_Stop_Capture = ui->action_Capture_Stop_Capture;
-    action_Capture_Stop_Capture->setShortcut(QKeySequence(Qt::Key_Escape));
+    action_Capture_Stop_Recording = ui->action_Capture_Stop_Recording;
+    action_Capture_Stop_Recording->setShortcut(QKeySequence(Qt::Key_Escape));
 
     action_Capture_Master_Stream_None = ui->action_Capture_Master_Stream_None;
     action_Capture_Master_Stream_Video = ui->action_Capture_Master_Stream_Video;
@@ -81,8 +84,8 @@ void MainWindow::init(){
     connect(action_Capture_Set_Frame_Rate, &QAction::triggered, this, &MainWindow::on_Action_Capture_Set_Frame_Rate);
     connect(action_Capture_Set_Time_Limit, &QAction::triggered, this, &MainWindow::on_Action_Capture_Set_Time_Limit);
     connect(action_Capture_Set_Video_Compressor, &QAction::triggered, this, &MainWindow::on_Action_Capture_Set_Video_Compressor);
-    connect(action_Capture_Start_Capture, &QAction::triggered, this, &MainWindow::startVideoRecording);
-    connect(action_Capture_Stop_Capture, &QAction::triggered, this, &MainWindow::stopVideoRecording);
+    connect(action_Capture_Start_Recording, &QAction::triggered, this, &MainWindow::startVideoRecording);
+    connect(action_Capture_Stop_Recording, &QAction::triggered, this, &MainWindow::stopVideoRecording);
     connect(action_Capture_Master_Stream_None, &QAction::triggered, this, &MainWindow::on_Action_Capture_Master_Stream_None);
     connect(action_Capture_Master_Stream_Video, &QAction::triggered, this, &MainWindow::on_Action_Capture_Master_Stream_Video);
     connect(action_Capture_Master_Stream_Audio, &QAction::triggered, this, &MainWindow::on_Action_Capture_Master_Stream_Audio);
@@ -93,25 +96,42 @@ void MainWindow::init(){
     connect(action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
 }
 
+QSize MainWindow::get_Max_Resolution(QList<QSize> resolutions) {
+    if (resolutions.isEmpty()) {
+        return QSize(); // 或者抛出一个异常，或者返回一个错误代码
+    }
+
+    QSize maxResolution = resolutions.first(); // 使用列表中的第一个分辨率作为初始值
+    for (const QSize &res : resolutions) {
+        if (res.width() * res.height() > maxResolution.width() * maxResolution.height()) {
+            maxResolution = res;
+        }
+    }
+    return maxResolution;
+}
 void MainWindow::init_Camera() {
     menu_devices = ui->menuDevices;
+    cameras = std::make_unique<QList<QCameraDevice>>(QMediaDevices::videoInputs());
+    QList<QSize> resolutions; //当前摄像头支持的分辨率
 
     // 遍历所有视频输入设备
-    for (int i = 0; i < QMediaDevices::videoInputs().size(); ++i) {
-        QCameraDevice cameraDevice = QMediaDevices::videoInputs().at(i);
+    for (int i = 0; i < cameras->size(); ++i) {
+        QCameraDevice cameraDevice = cameras->at(i);
         QString deviceDescription = cameraDevice.description();
 
         // 创建一个可勾选的 QAction
         QAction *cameraAction = new QAction(deviceDescription, menu_devices);
         cameraAction->setCheckable(true);  // 设置为可勾选
+        resolutions = cameraDevice.photoResolutions();//当前相机支持的分辨率
         if(i == 0){
             cameraAction->setChecked(true);//给默认设备打勾
+            max_resolution = get_Max_Resolution(resolutions);
         }
         menu_devices->addAction(cameraAction);
 
         // 连接信号和槽
-        connect(cameraAction, &QAction::triggered, this, [this, i, cameraAction]() {
-            on_Devices_Selected(i, cameraAction);  // 传递设备ID和对应的 QAction
+        connect(cameraAction, &QAction::triggered, this, [this, i, cameraAction, resolutions]() {
+            on_Devices_Selected(i, cameraAction, resolutions);  // 传递设备ID和对应的 QAction
         });
     }
 
@@ -120,6 +140,35 @@ void MainWindow::init_Camera() {
         qFatal("Failed to open camera");
         return;
     }
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &MainWindow::updateFrame);
+    timer->start(30);  // 每 30 毫秒更新一次（约 33 FPS）
+}
+void MainWindow::on_Devices_Selected(int selected_deviceId, QAction *selectedAction, QList<QSize> resolutions) {
+    if(device_id == selected_deviceId) return;
+    // 打开另一个摄像头获取最大分辨率
+    cap.open(selected_deviceId);
+    if (!cap.isOpened()) {
+        qFatal("Failed to open camera");
+        return;
+    }
+    max_resolution = get_Max_Resolution(resolutions);
+    device_id = selected_deviceId;
+
+    // 取消所有其他 QAction 的勾选状态
+    for (QAction *action : menu_devices->actions()) {
+        action->setChecked(false);
+    }
+    // 勾选当前选中的 QAction
+    selectedAction->setChecked(true);
+
+    // 启动定时器
+    if (timer) {
+        timer->stop();
+        delete timer;
+        timer = nullptr;
+    }
+
     timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::updateFrame);
     timer->start(30);  // 每 30 毫秒更新一次（约 33 FPS）
@@ -163,35 +212,6 @@ void MainWindow::on_Action_File_Exit(){
     this->close();
 }
 
-void MainWindow::on_Devices_Selected(int selected_deviceId, QAction *selectedAction) {
-    if(device_id == selected_deviceId) return;
-    // 打开摄像头
-    cap.open(selected_deviceId);
-    if (!cap.isOpened()) {
-        qFatal("Failed to open camera");
-        return;
-    }
-
-    device_id = selected_deviceId;
-
-    // 取消所有其他 QAction 的勾选状态
-    for (QAction *action : menu_devices->actions()) {
-        action->setChecked(false);
-    }
-    // 勾选当前选中的 QAction
-    selectedAction->setChecked(true);
-
-    // 启动定时器
-    if (timer) {
-        timer->stop();
-        delete timer;
-        timer = nullptr;
-    }
-
-    timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &MainWindow::updateFrame);
-    timer->start(30);  // 每 30 毫秒更新一次（约 33 FPS）
-}
 
 void MainWindow::on_Action_Option_Video_Capture_Filter(){
 
@@ -204,6 +224,7 @@ void MainWindow::on_Action_Option_Video_Capture_pin(){
     return;
 }
 
+// 截图
 void MainWindow::on_Action_Capture_Capture_Image(){
     if (image_saved_path.isEmpty()) {
         QMessageBox::information(this, "Warning", "The image save path is empty. Please specify a valid path.");
@@ -213,46 +234,6 @@ void MainWindow::on_Action_Capture_Capture_Image(){
         QString filePath = QDir(image_saved_path).filePath(QString("image_%1.png").arg(timestamp));
         videoLabel->pixmap().save(filePath);
     }
-}
-
-void MainWindow::on_Action_Capture_Capture_Audio(){
-    return;
-}
-void MainWindow::on_Action_Capture_Capture_Buffer_Data(){
-    return;
-}
-void MainWindow::on_Action_Capture_Capture_Prevciew_Picture(){
-    return;
-}
-void MainWindow::on_Action_Capture_Set_Frame_Rate(){
-    return;
-}
-void MainWindow::on_Action_Capture_Set_Time_Limit(){
-    return;
-}
-void MainWindow::on_Action_Capture_Set_Video_Compressor(){
-    return;
-}
-
-void MainWindow::on_Action_Capture_Master_Stream_None(){
-    return;
-}
-void MainWindow::on_Action_Capture_Master_Stream_Video(){
-    return;
-}
-void MainWindow::on_Action_Capture_Master_Stream_Audio(){
-    return;
-}
-void MainWindow::on_Action_Photo_Start_Photo_F3(){
-    return;
-}
-void MainWindow::on_Action_Photo_Set_Photo_Format(){
-    return;
-}
-
-
-void MainWindow::on_Action_Help_About(){
-    return;
 }
 
 // 开始录制视频
@@ -267,34 +248,24 @@ void MainWindow::startVideoRecording() {
         // 打开VideoWriter，设置视频保存路径，编码格式，帧率和尺寸
         QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
         QString filePath = QDir(video_saved_path).filePath(QString("video_%1.avi").arg(timestamp));
-        writer.open(filePath.toStdString(), cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), fps, cv::Size(frameWidth, frameHeight), true);
+        writer.open(filePath.toStdString(), cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), fps, cv::Size(videoLabel->pixmap().size().width(), videoLabel->pixmap().size().height()), true);
         if (!writer.isOpened()) {
             qDebug() << "Error opening video writer!";
             return;
         }
-
         // 开始录制
         isRecording = true;
 
-        // 使用定时器定时获取帧并录制
         recordTimer = new QTimer(this);
         connect(recordTimer, &QTimer::timeout, this, [=]() {
-            // 获取QLabel中显示的图像
-            // 获取QImage并确保其格式为RGB888
             QImage img = videoLabel->pixmap().toImage();
             if (img.format() != QImage::Format_RGB888) {
                 img = img.convertToFormat(QImage::Format_RGB888);
             }
-
-            // 将QImage转换为cv::Mat
-            cv::Mat frame(frameHeight, frameWidth, CV_8UC3, img.bits(), img.bytesPerLine());
-
+            cv::Mat frame(videoLabel->pixmap().size().height(), videoLabel->pixmap().size().width(), CV_8UC3, img.bits(), img.bytesPerLine());
+            frame = frame.clone();  // 确保 OpenCV Mat 有独立的内存
             // 转换为BGR格式
             cv::cvtColor(frame, frame, cv::COLOR_RGB2BGR);  // RGB -> BGR转换
-            // QString test_timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
-            // QString test_filePath = QDir(video_saved_path).filePath(QString("test_frame_%1.png").arg(test_timestamp));
-            // cv::imwrite(test_filePath.toStdString(), frame);
-            // 将图像写入视频文件
             writer.write(frame);
         });
 
@@ -323,6 +294,56 @@ void MainWindow::stopVideoRecording() {
     // 标记录制状态为停止
     isRecording = false;
 }
+
+void MainWindow::on_Action_Capture_Capture_Audio(){
+    return;
+}
+
+void MainWindow::on_Action_Capture_Capture_Buffer_Data(){
+    return;
+}
+
+void MainWindow::on_Action_Capture_Capture_Prevciew_Picture(){
+    return;
+}
+
+void MainWindow::on_Action_Capture_Set_Frame_Rate(){
+    return;
+}
+
+void MainWindow::on_Action_Capture_Set_Time_Limit(){
+    return;
+}
+
+void MainWindow::on_Action_Capture_Set_Video_Compressor(){
+    return;
+}
+
+void MainWindow::on_Action_Capture_Master_Stream_None(){
+    return;
+}
+
+void MainWindow::on_Action_Capture_Master_Stream_Video(){
+    return;
+}
+
+void MainWindow::on_Action_Capture_Master_Stream_Audio(){
+    return;
+}
+
+void MainWindow::on_Action_Photo_Start_Photo_F3(){
+    return;
+}
+
+void MainWindow::on_Action_Photo_Set_Photo_Format(){
+    return;
+}
+
+void MainWindow::on_Action_Help_About(){
+    return;
+}
+
+
 // void MainWindow::startVideoRecording() {
 //     if (video_saved_path.isEmpty()) {
 //         QMessageBox::information(this, "Warning", "The video save path is empty. Please specify a valid path.");

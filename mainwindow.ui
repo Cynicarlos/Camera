@@ -165,8 +165,8 @@ color: rgb(0, 0, 0);</string>
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="action_File_Set_Capture_Directory"/>
-    <addaction name="action_File_Set_Photo_Directory"/>
+    <addaction name="action_File_Set_Video_Directory"/>
+    <addaction name="action_File_Set_Image_Directory"/>
     <addaction name="separator"/>
     <addaction name="separator"/>
     <addaction name="action_File_Exit"/>
@@ -188,8 +188,8 @@ color: rgb(0, 0, 0);</string>
      <addaction name="action_Capture_Master_Stream_Video"/>
     </widget>
     <addaction name="action_Capture_Capture_Image"/>
-    <addaction name="action_Capture_Start_Capture"/>
-    <addaction name="action_Capture_Stop_Capture"/>
+    <addaction name="action_Capture_Start_Recording"/>
+    <addaction name="action_Capture_Stop_Recording"/>
     <addaction name="separator"/>
     <addaction name="action_Capture_Capture_Audio"/>
     <addaction name="menu_Capture_Master_Stream"/>
@@ -199,17 +199,6 @@ color: rgb(0, 0, 0);</string>
     <addaction name="separator"/>
     <addaction name="action_Capture_Capture_Buffer_Data"/>
     <addaction name="separator"/>
-   </widget>
-   <widget class="QMenu" name="menuPhoto">
-    <property name="styleSheet">
-     <string notr="true">background-color: white;
-color: rgb(0, 0, 0);</string>
-    </property>
-    <property name="title">
-     <string>Photo</string>
-    </property>
-    <addaction name="action_Photo_Start_Photo_F3"/>
-    <addaction name="action_Photo_Set_Photo_Format"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="styleSheet">
@@ -225,7 +214,6 @@ color: rgb(0, 0, 0);</string>
    <addaction name="menuDevices"/>
    <addaction name="menuOption"/>
    <addaction name="menuCapture"/>
-   <addaction name="menuPhoto"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="action_Option_Preview">
@@ -257,17 +245,17 @@ color: rgb(0, 0, 0);</string>
     <string>Open</string>
    </property>
   </action>
-  <action name="action_File_Set_Capture_Directory">
+  <action name="action_File_Set_Video_Directory">
    <property name="enabled">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Set Capture Directory</string>
+    <string>Set Video Directory</string>
    </property>
   </action>
-  <action name="action_File_Set_Photo_Directory">
+  <action name="action_File_Set_Image_Directory">
    <property name="text">
-    <string>Set Photo Directory</string>
+    <string>Set Image Directory</string>
    </property>
   </action>
   <action name="action_File_Save_Captured_Video_As">
@@ -300,14 +288,14 @@ color: rgb(0, 0, 0);</string>
     <string>Video Capture Pin...</string>
    </property>
   </action>
-  <action name="action_Capture_Start_Capture">
+  <action name="action_Capture_Start_Recording">
    <property name="text">
-    <string>Start Capture Video</string>
+    <string>Start Recording Video</string>
    </property>
   </action>
-  <action name="action_Capture_Stop_Capture">
+  <action name="action_Capture_Stop_Recording">
    <property name="text">
-    <string>Stop Capture Video</string>
+    <string>Stop Recording Video</string>
    </property>
   </action>
   <action name="action_Capture_Capture_Audio">
