@@ -3,21 +3,13 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    // , brightness(0)
-    // , contrast(100)
 {
     ui->setupUi(this);
 
     this->setStyleSheet("QMenu::item:selected {background-color:rgb(234, 243, 253);}");
+
     init();
     init_Camera();
-
-    // 创建菜单栏
-    menuBar = ui->menubar;
-    videoLabel = ui->videoLabel;
-    videoLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
-    videoLabel->setScaledContents(true); // 保持图片比例
-    videoLabel->setAlignment(Qt::AlignCenter); // 居中显示videoLabel = ui->videoLabel;
 
 }
 
@@ -28,6 +20,13 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::init(){
+    // 创建菜单栏
+    menuBar = ui->menubar;
+    videoLabel = ui->videoLabel;
+    videoLabel->setSizePolicy(QSizePolicy::Ignored,QSizePolicy::Ignored);
+    videoLabel->setScaledContents(true); // 保持图片比例
+    videoLabel->setAlignment(Qt::AlignCenter); // 居中显示videoLabel = ui->videoLabel;
+
     //Files
     action_File_Set_Capture_Directory = ui->action_File_Set_Video_Directory;
     action_File_Set_Photo_Directory = ui->action_File_Set_Image_Directory;
@@ -35,7 +34,6 @@ void MainWindow::init(){
     action_File_Exit = ui->action_File_Exit;
 
     //Options
-    //action_Option_Preview = ui->action_Option_Preview;
     action_Option_Video_Capture_Filter = ui->action_Option_Video_Capture_Filter;
     action_Option_Video_Capture_pin = ui->action_Option_Video_Capture_pin;
 
@@ -70,10 +68,8 @@ void MainWindow::init(){
 
     connect(action_File_Set_Capture_Directory, &QAction::triggered, this, &MainWindow::on_Action_File_Set_Capture_Directory);
     connect(action_File_Set_Photo_Directory, &QAction::triggered, this, &MainWindow::on_Action_File_Set_Photo_Directory);
-    //connect(action_File_Save_Captured_Video_As, &QAction::triggered, this, &MainWindow::on_Action_File_Save_Captured_Video_As);
     connect(action_File_Exit, &QAction::triggered, this, &MainWindow::on_Action_File_Exit);
 
-    //connect(action_Option_Preview, &QAction::triggered, this, &MainWindow::on_Action_Option_Preview);
     connect(action_Option_Video_Capture_Filter, &QAction::triggered, this, &MainWindow::on_Action_Option_Video_Capture_Filter);
     connect(action_Option_Video_Capture_pin, &QAction::triggered, this, &MainWindow::on_Action_Option_Video_Capture_pin);
 
@@ -96,23 +92,11 @@ void MainWindow::init(){
     connect(action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
 }
 
-QSize MainWindow::get_Max_Resolution(QList<QSize> resolutions) {
-    if (resolutions.isEmpty()) {
-        return QSize(); // 或者抛出一个异常，或者返回一个错误代码
-    }
 
-    QSize maxResolution = resolutions.first(); // 使用列表中的第一个分辨率作为初始值
-    for (const QSize &res : resolutions) {
-        if (res.width() * res.height() > maxResolution.width() * maxResolution.height()) {
-            maxResolution = res;
-        }
-    }
-    return maxResolution;
-}
 void MainWindow::init_Camera() {
     menu_devices = ui->menuDevices;
     cameras = std::make_unique<QList<QCameraDevice>>(QMediaDevices::videoInputs());
-    QList<QSize> resolutions; //当前摄像头支持的分辨率
+    //QList<QSize> resolutions; //当前摄像头支持的分辨率
 
     // 遍历所有视频输入设备
     for (int i = 0; i < cameras->size(); ++i) {
@@ -122,16 +106,15 @@ void MainWindow::init_Camera() {
         // 创建一个可勾选的 QAction
         QAction *cameraAction = new QAction(deviceDescription, menu_devices);
         cameraAction->setCheckable(true);  // 设置为可勾选
-        resolutions = cameraDevice.photoResolutions();//当前相机支持的分辨率
+        //resolutions = cameraDevice.photoResolutions();//当前相机支持的分辨率
         if(i == 0){
             cameraAction->setChecked(true);//给默认设备打勾
-            max_resolution = get_Max_Resolution(resolutions);
         }
         menu_devices->addAction(cameraAction);
 
         // 连接信号和槽
-        connect(cameraAction, &QAction::triggered, this, [this, i, cameraAction, resolutions]() {
-            on_Devices_Selected(i, cameraAction, resolutions);  // 传递设备ID和对应的 QAction
+        connect(cameraAction, &QAction::triggered, this, [this, i, cameraAction]() {
+            on_Devices_Selected(i, cameraAction);  // 传递设备ID和对应的 QAction
         });
     }
 
@@ -144,15 +127,13 @@ void MainWindow::init_Camera() {
     connect(timer, &QTimer::timeout, this, &MainWindow::updateFrame);
     timer->start(30);  // 每 30 毫秒更新一次（约 33 FPS）
 }
-void MainWindow::on_Devices_Selected(int selected_deviceId, QAction *selectedAction, QList<QSize> resolutions) {
+void MainWindow::on_Devices_Selected(int selected_deviceId, QAction *selectedAction) {
     if(device_id == selected_deviceId) return;
-    // 打开另一个摄像头获取最大分辨率
     cap.open(selected_deviceId);
     if (!cap.isOpened()) {
         qFatal("Failed to open camera");
         return;
     }
-    max_resolution = get_Max_Resolution(resolutions);
     device_id = selected_deviceId;
 
     // 取消所有其他 QAction 的勾选状态
@@ -197,6 +178,7 @@ void MainWindow::on_Action_File_Set_Capture_Directory(){
         qDebug() << "video_saved_path:" << video_saved_path;
     }
 }
+
 void MainWindow::on_Action_File_Set_Photo_Directory(){
     // 获取当前工作目录作为对话框的起始目录
     QString dir = QFileDialog::getExistingDirectory(this, tr("Open Folder"), QDir::currentPath(),
@@ -208,10 +190,10 @@ void MainWindow::on_Action_File_Set_Photo_Directory(){
         qDebug() << "image_saved_path:" << image_saved_path;
     }
 }
+
 void MainWindow::on_Action_File_Exit(){
     this->close();
 }
-
 
 void MainWindow::on_Action_Option_Video_Capture_Filter(){
 
@@ -344,83 +326,6 @@ void MainWindow::on_Action_Help_About(){
 }
 
 
-// void MainWindow::startVideoRecording() {
-//     if (video_saved_path.isEmpty()) {
-//         QMessageBox::information(this, "Warning", "The video save path is empty. Please specify a valid path.");
-//         on_Action_File_Set_Capture_Directory();
-//     } else{
-//         // 创建 VideoRecorder 实例并设置 QLabel
-//         videorecorder = new VideoRecorder(this);
-//         videorecorder->setLabel(videoLabel);
-
-//         // 设置保存视频的路径
-//         QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
-//         QString filePath = QDir(video_saved_path).filePath(QString("video_%1.mp4").arg(timestamp));
-//         //QString outputFilePath = QDir::homePath() + "/output_video.mp4";
-//         // 开始录制
-//         videorecorder->startRecording(filePath);
-//     }
-// }
-
-// void MainWindow::stopVideoRecording() {
-//     if (videorecorder) {
-//         videorecorder->stopRecording();
-//     }
-// }
-
-
-
-// void MainWindow::onVideoFrameChanged(const QVideoFrame &frame)
-// {
-//     //qDebug() << "Video frame received";  // 每次接收到视频帧时输出调试信息
-
-//     // 转换 QVideoFrame 为 QImage
-//     QImage image = frame.toImage();
-//     if (!image.isNull()) {
-//         processImage(image);  // 处理捕获的图像
-//     } else {
-//         qDebug() << "Captured video frame is null!";
-//     }
-// }
-
-
-// void MainWindow::processImage(const QImage &inputImage)
-// {
-//     if (!inputImage.isNull()) {
-
-//         QImage hq_image = inputImage.convertToFormat(QImage::Format_Grayscale8);  // 这里可以插入实际的图像处理逻辑
-//         //=======================================
-//         // cv::Mat lq_img = QImage2cvMat(inputImage);
-//         // cv::cvtColor(lq_img, lq_img, cv::COLOR_BGR2RGB);
-//         // cv::resize(lq_img, lq_img, cv::Size(224, 224));
-//         // torch::Tensor tensor = torch::from_blob(lq_img.data, {1, 224, 224, 3}, torch::kByte);
-//         // tensor = tensor.permute({0, 3, 1, 2});
-//         // tensor = tensor.to(torch::kFloat);
-//         // tensor = tensor.div(255);
-
-//         // torch::jit::IValue input = tensor.unsqueeze(0);
-//         // at::Tensor output = model.forward({input}).toTensor();
-
-//         //MAT -> qImage
-//         // QImage hq_image = cvMat2QImage(lq_img);
-//         //=======================================
-
-//         //qDebug() << "Processed image size:" << processedImage.size(); // 输出处理后图像的大小
-
-//         // 将处理后的图像转换为 QPixmap
-//         QPixmap pixmap = QPixmap::fromImage(hq_image);
-
-//         // 更新 QLabel，显示处理后的图像
-//         m_processedVideoWidget->setPixmap(pixmap.scaled(m_originalVideoWidget->size(), Qt::KeepAspectRatio));
-
-//         // 强制刷新 QLabel，确保图像显示
-//         //m_processedVideoWidget->repaint();
-//     } else {
-//         qDebug() << "Processed image is null!";
-//     }
-// }
-
-
 // cv::Mat QImage2cvMat(const QImage &image){
 //     cv::Mat mat;
 //     switch(image.format()){
@@ -474,78 +379,3 @@ void MainWindow::on_Action_Help_About(){
 //     }
 //     return image;
 // }
-
-// void MainWindow::_setup_devices_display()
-// {
-//     QVector<QString> loadedCameraDevices;
-//     for (const QCameraDevice &info : QMediaDevices::videoInputs())
-//     {
-//         QString deviceName = info.description();
-//         loadedCameraDevices.append(deviceName);
-//         ui->available_camera_devices_list->addItem(deviceName);
-//     }
-// }
-
-// void MainWindow::on_available_camera_devices_list_itemClicked(QListWidgetItem *item)
-// {
-//     // 获取被点击的相机名称
-//     QString selectedCameraName = item->text();
-
-//     // 检查当前的相机是否已经在使用，如果是则直接返回
-//     if (m_camera && m_camera->cameraDevice().description() == selectedCameraName)
-//     {
-//         return;  // 当前相机正在使用，跳过不处理
-//     }
-
-//     // 遍历可用的相机设备，匹配选中的相机名称
-//     for (const QCameraDevice &cameraDevice : QMediaDevices::videoInputs())
-//     {
-//         if (cameraDevice.description() == selectedCameraName)
-//         {
-//             // 停止当前摄像头并释放
-//             if (m_camera)
-//             {
-//                 m_camera->stop();
-//             }
-
-//             // 创建新的 QCamera 对象并设置新的相机设备
-//             m_camera.reset(new QCamera(cameraDevice));
-//             m_CaptureSession.setCamera(m_camera.data());
-//             m_CaptureSession.setVideoOutput(m_originalVideoWidget);
-
-//             // 启动新相机
-//             m_camera->start();
-//             ui->switch_button->setChecked(true);
-//             ui->switch_button->setText("On");
-
-//             break;  // 找到并启动相机后跳出循环
-//         }
-//     }
-// }
-
-
-
-// void MainWindow::_setup_ui()
-// {
-//     ui->switch_button->setChecked(true);
-// }
-
-// void MainWindow::on_quit_app_button_clicked()
-// {
-//     QApplication::exit();
-// }
-
-// void MainWindow::on_switch_button_clicked(bool checked)
-// {
-//     if (checked) {
-//         m_camera->start();
-//         ui->switch_button->setChecked(true);
-//         ui->switch_button->setText("On");
-//     }
-//     else {
-//         m_camera->stop();
-//         ui->switch_button->setChecked(false);
-//         ui->switch_button->setText("Off");
-//     }
-// }
-

@@ -26,18 +26,6 @@ INCLUDEPATH += D:\Programing\opencv\OpenCV-MinGW-Build-OpenCV-4.5.5-x64\include\
                D:\Programing\opencv\OpenCV-MinGW-Build-OpenCV-4.5.5-x64\include\opencv
 LIBS += -L D:\Programing\opencv\OpenCV-MinGW-Build-OpenCV-4.5.5-x64\x64\mingw\lib\libopencv_*.a
 
-# win32:CONFIG(release, debug|release): LIBS += -LD:/Programing/opencv/build/x64/vc14/lib/ -lopencv_world455
-# else:win32:CONFIG(debug, debug|release): LIBS += -LD:/Programing/opencv/build/x64/vc14/lib/ -lopencv_world455d
-# else:unix: LIBS += -LD:/Programing/opencv/build/x64/vc14/lib/ -lopencv_world455
-
-# win32:CONFIG(release, debug|release): LIBS += -LD:/Programing/opencv/build/x64/vc15/lib/ -lopencv_world455
-# else:win32:CONFIG(debug, debug|release): LIBS += -LD:/Programing/opencv/build/x64/vc15/lib/ -lopencv_world455d
-# else:unix: LIBS += -LD:/Programing/opencv/build/x64/vc15/lib/ -lopencv_world455
-
-# INCLUDEPATH += D:/Programing/opencv/build/include
-# DEPENDPATH += D:/Programing/opencv/build/include
-
-
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

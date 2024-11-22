@@ -164,7 +164,6 @@ void VideoCaptureFilter::Set_Camera_Control_Default_Values(){
 
 }
 
-
 void VideoCaptureFilter::on_Amp_Yes(){
     //这里是用户给定视频参数，调整视频并显示的逻辑
     this->close();
@@ -184,113 +183,69 @@ void VideoCaptureFilter::on_Camera_Control_Cannel(){
 }
 
 void VideoCaptureFilter::set_General_Slots(){
-    //QPushButton * pushButton_amp_default = ui->pushButton_amp_default;
     connect(pushButton_amp_default, &QPushButton::clicked, this, &VideoCaptureFilter::Set_Amp_Default_Values);
 
-    //QPushButton * pushButton_amp_yes = ui->pushButton_amp_yes;
     connect(pushButton_amp_yes, &QPushButton::clicked, this, &VideoCaptureFilter::on_Amp_Yes);
 
-    //QPushButton * pushButton_amp_cancel = ui->pushButton_amp_cancel;
     connect(pushButton_amp_cancel, &QPushButton::clicked, this, &VideoCaptureFilter::on_Amp_Cannel);
 
-    //QPushButton * pushButton_camera_control_default = ui->pushButton_camera_control_default;
     connect(pushButton_camera_control_default, &QPushButton::clicked, this, &VideoCaptureFilter::Set_Camera_Control_Default_Values);
 
-    //QPushButton * pushButton_camera_control_yes = ui->pushButton_camera_control_yes;
     connect(pushButton_camera_control_yes, &QPushButton::clicked, this, &VideoCaptureFilter::on_Camera_Control_Yes);
 
-    //QPushButton * pushButton_camera_control_cancel = ui->pushButton_camera_control_cancel;
     connect(pushButton_camera_control_cancel, &QPushButton::clicked, this, &VideoCaptureFilter::on_Camera_Control_Cannel);
 }
 
 void VideoCaptureFilter::bind_Slider_Spinbox(){
 
-    //QSlider *Slider_brightness = ui->Slider_brightness;
-    //QSpinBox *spinBox_brightness = ui->spinBox_brightness;
     QObject::connect(Slider_brightness, &QSlider::valueChanged, spinBox_brightness, &QSpinBox::setValue);
     QObject::connect(spinBox_brightness, &QSpinBox::valueChanged, Slider_brightness, &QSlider::setValue);
 
-    // QSlider *Slider_contrast = ui->Slider_contrast;
-    // QSpinBox *spinBox_contrast = ui->spinBox_contrast;
     QObject::connect(Slider_contrast, &QSlider::valueChanged, spinBox_contrast, &QSpinBox::setValue);
     QObject::connect(spinBox_contrast, &QSpinBox::valueChanged, Slider_contrast, &QSlider::setValue);
 
-    // QSlider *Slider_hue = ui->Slider_hue;
-    // QSpinBox *spinBox_hue = ui->spinBox_hue;
     QObject::connect(Slider_hue, &QSlider::valueChanged, spinBox_hue, &QSpinBox::setValue);
     QObject::connect(spinBox_hue, &QSpinBox::valueChanged, Slider_hue, &QSlider::setValue);
 
-    // QSlider *Slider_saturability = ui->Slider_saturability;
-    // QSpinBox *spinBox_saturability = ui->spinBox_saturability;
     QObject::connect(Slider_saturability, &QSlider::valueChanged, spinBox_saturability, &QSpinBox::setValue);
     QObject::connect(spinBox_saturability, &QSpinBox::valueChanged, Slider_saturability, &QSlider::setValue);
 
-    // QSlider *Slider_plain = ui->Slider_plain;
-    // QSpinBox *spinBox_plain = ui->spinBox_plain;
     QObject::connect(Slider_plain, &QSlider::valueChanged, spinBox_plain, &QSpinBox::setValue);
     QObject::connect(spinBox_plain, &QSpinBox::valueChanged, Slider_plain, &QSlider::setValue);
 
-    // QSlider *Slider_gamma = ui->Slider_gamma;
-    // QSpinBox *spinBox_gamma = ui->spinBox_gamma;
     QObject::connect(Slider_gamma, &QSlider::valueChanged, spinBox_gamma, &QSpinBox::setValue);
     QObject::connect(spinBox_gamma, &QSpinBox::valueChanged, Slider_gamma, &QSlider::setValue);
 
-    // QSlider *Slider_wb = ui->Slider_wb;
-    // QSpinBox *spinBox_wb = ui->spinBox_wb;
     QObject::connect(Slider_wb, &QSlider::valueChanged, spinBox_wb, &QSpinBox::setValue);
     QObject::connect(spinBox_wb, &QSpinBox::valueChanged, Slider_wb, &QSlider::setValue);
 
-    // QSlider *Slider_backlight = ui->Slider_backlight;
-    // QSpinBox *spinBox_backlight = ui->spinBox_backlight;
     QObject::connect(Slider_backlight, &QSlider::valueChanged, spinBox_backlight, &QSpinBox::setValue);
     QObject::connect(spinBox_backlight, &QSpinBox::valueChanged, Slider_backlight, &QSlider::setValue);
 
-    // QSlider *Slider_gain = ui->Slider_gain;
-    // QSpinBox *spinBox_gain = ui->spinBox_gain;
     QObject::connect(Slider_gain, &QSlider::valueChanged, spinBox_gain, &QSpinBox::setValue);
     QObject::connect(spinBox_gain, &QSpinBox::valueChanged, Slider_gain, &QSlider::setValue);
 
 
-
-
-
     //===========================camera control===========================
-    // QSlider *Slider_zoom = ui->Slider_zoom;
-    // QSpinBox *spinBox_zoom = ui->spinBox_zoom;
+
     QObject::connect(Slider_zoom, &QSlider::valueChanged, spinBox_zoom, &QSpinBox::setValue);
     QObject::connect(spinBox_zoom, &QSpinBox::valueChanged, Slider_zoom, &QSlider::setValue);
 
-    // QSlider *Slider_focus = ui->Slider_focus;
-    // QSpinBox *spinBox_focus = ui->spinBox_focus;
     QObject::connect(Slider_focus, &QSlider::valueChanged, spinBox_focus, &QSpinBox::setValue);
     QObject::connect(spinBox_focus, &QSpinBox::valueChanged, Slider_focus, &QSlider::setValue);
 
-    // QSlider *Slider_exposure = ui->Slider_exposure;
-    // QSpinBox *spinBox_exposure = ui->spinBox_exposure;
     QObject::connect(Slider_exposure, &QSlider::valueChanged, spinBox_exposure, &QSpinBox::setValue);
     QObject::connect(spinBox_exposure, &QSpinBox::valueChanged, Slider_exposure, &QSlider::setValue);
 
-    // QSlider *Slider_aperture = ui->Slider_aperture;
-    // QSpinBox *spinBox_aperture = ui->spinBox_aperture;
     QObject::connect(Slider_aperture, &QSlider::valueChanged, spinBox_aperture, &QSpinBox::setValue);
     QObject::connect(spinBox_aperture, &QSpinBox::valueChanged, Slider_aperture, &QSlider::setValue);
 
-    // QSlider *Slider_panorama = ui->Slider_panorama;
-    // QSpinBox *spinBox_panorama = ui->spinBox_panorama;
     QObject::connect(Slider_panorama, &QSlider::valueChanged, spinBox_panorama, &QSpinBox::setValue);
     QObject::connect(spinBox_panorama, &QSpinBox::valueChanged, Slider_panorama, &QSlider::setValue);
 
-    // QSlider *Slider_tilt = ui->Slider_tilt;
-    // QSpinBox *spinBox_tilt = ui->spinBox_tilt;
     QObject::connect(Slider_tilt, &QSlider::valueChanged, spinBox_tilt, &QSpinBox::setValue);
     QObject::connect(spinBox_tilt, &QSpinBox::valueChanged, Slider_tilt, &QSlider::setValue);
 
-    // QSlider *Slider_roll = ui->Slider_roll;
-    // QSpinBox *spinBox_roll = ui->spinBox_roll;
     QObject::connect(Slider_roll, &QSlider::valueChanged, spinBox_roll, &QSpinBox::setValue);
     QObject::connect(spinBox_roll, &QSpinBox::valueChanged, Slider_roll, &QSlider::setValue);
-
-
-
-
 }

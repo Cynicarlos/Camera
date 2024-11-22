@@ -9,20 +9,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>834</width>
-    <height>595</height>
+    <width>829</width>
+    <height>537</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>834</width>
-    <height>595</height>
+    <width>829</width>
+    <height>537</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>834</width>
-    <height>595</height>
+    <width>829</width>
+    <height>537</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -47,14 +47,14 @@ color: rgb(0, 0, 0);</string>
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>819</width>
-     <height>579</height>
+     <x>0</x>
+     <y>0</y>
+     <width>821</width>
+     <height>531</height>
     </rect>
    </property>
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -78,6 +78,12 @@ QTabBar::tab:selected {
     <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <attribute name="title">
      <string>视频 Proc Amp</string>
     </attribute>
@@ -86,8 +92,8 @@ QTabBar::tab:selected {
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>805</width>
-       <height>541</height>
+       <width>811</width>
+       <height>491</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1,1,1,1,1,1,1,1,1,1,1">
@@ -1447,14 +1453,20 @@ QCheckBox::indicator:checked {
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,1,0">
+       <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,0,0">
         <property name="spacing">
-         <number>100</number>
+         <number>200</number>
         </property>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_48">
           <item>
            <widget class="QCheckBox" name="checkBox_enable_color">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="layoutDirection">
              <enum>Qt::LayoutDirection::RightToLeft</enum>
             </property>
@@ -1489,16 +1501,16 @@ QCheckBox::indicator:checked {
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_51">
           <property name="spacing">
-           <number>10</number>
-          </property>
-          <property name="leftMargin">
-           <number>100</number>
-          </property>
-          <property name="rightMargin">
-           <number>100</number>
+           <number>0</number>
           </property>
           <item>
            <widget class="QLabel" name="label_10">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="styleSheet">
              <string notr="true">color: rgb(0, 0, 0);</string>
             </property>
@@ -1512,6 +1524,12 @@ QCheckBox::indicator:checked {
           </item>
           <item>
            <widget class="QComboBox" name="comboBox_powerline">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="styleSheet">
              <string notr="true">QComboBox {
     border: 2px solid gray;            /* 默认灰色边框 */
@@ -1606,6 +1624,12 @@ color: black;</string>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
     <attribute name="title">
      <string>照相机控制</string>
     </attribute>
@@ -1614,8 +1638,8 @@ color: black;</string>
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>807</width>
-       <height>541</height>
+       <width>811</width>
+       <height>491</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1,1,1,1,1,1,1,1,1">
@@ -2738,7 +2762,7 @@ QCheckBox::indicator:checked {
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_98" stretch="0,0">
         <property name="spacing">
-         <number>600</number>
+         <number>550</number>
         </property>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_99">
