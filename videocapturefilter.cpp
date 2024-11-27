@@ -27,38 +27,48 @@ void VideoCaptureFilter::init_Widget()
     Slider_brightness = ui->Slider_brightness;
     spinBox_brightness = ui->spinBox_brightness;
     checkBox_auto_brightness = ui->checkBox_auto_brightness;
+    connect(Slider_brightness, &QSlider::valueChanged, this, &VideoCaptureFilter::onBrightnessChanged);
 
     Slider_contrast = ui->Slider_contrast;
     spinBox_contrast = ui->spinBox_contrast;
     checkBox_auto_contrast = ui->checkBox_auto_contrast;
+    connect(Slider_contrast, &QSlider::valueChanged, this, &VideoCaptureFilter::onContrastChanged);
+
 
     Slider_hue = ui->Slider_hue;
     spinBox_hue = ui->spinBox_hue;
     checkBox_auto_hue = ui->checkBox_auto_hue;
+    connect(Slider_hue, &QSlider::valueChanged, this, &VideoCaptureFilter::onHueChanged);
 
     Slider_saturability = ui->Slider_saturability;
     spinBox_saturability = ui->spinBox_saturability;
     checkBox_auto_saturability = ui->checkBox_auto_saturability;
+    connect(Slider_saturability, &QSlider::valueChanged, this, &VideoCaptureFilter::onSaturabilityChanged);
 
     Slider_plain = ui->Slider_plain;
     spinBox_plain = ui->spinBox_plain;
     checkBox_auto_plain = ui->checkBox_auto_plain;
+    connect(Slider_plain, &QSlider::valueChanged, this, &VideoCaptureFilter::onPlainChanged);
 
     Slider_gamma = ui->Slider_gamma;
     spinBox_gamma = ui->spinBox_gamma;
     checkBox_auto_gamma = ui->checkBox_auto_gamma;
+    connect(Slider_gamma, &QSlider::valueChanged, this, &VideoCaptureFilter::onGammaChanged);
 
     Slider_wb = ui->Slider_wb;
     spinBox_wb = ui->spinBox_wb;
     checkBox_auto_wb = ui->checkBox_auto_wb;
+    connect(Slider_wb, &QSlider::valueChanged, this, &VideoCaptureFilter::onWbChanged);
 
     Slider_backlight = ui->Slider_backlight;
     spinBox_backlight = ui->spinBox_backlight;
     checkBox_auto_backlight = ui->checkBox_auto_backlight;
+    connect(Slider_backlight, &QSlider::valueChanged, this, &VideoCaptureFilter::onBacklightChanged);
 
     Slider_gain = ui->Slider_gain;
     spinBox_gain = ui->spinBox_gain;
     checkBox_auto_gain = ui->checkBox_auto_gain;
+    connect(Slider_gain, &QSlider::valueChanged, this, &VideoCaptureFilter::onGainChanged);
 
     //===========================camera control===========================
     Slider_zoom = ui->Slider_zoom;
@@ -248,4 +258,33 @@ void VideoCaptureFilter::bind_Slider_Spinbox(){
 
     QObject::connect(Slider_roll, &QSlider::valueChanged, spinBox_roll, &QSpinBox::setValue);
     QObject::connect(spinBox_roll, &QSpinBox::valueChanged, Slider_roll, &QSlider::setValue);
+}
+
+void VideoCaptureFilter::onBrightnessChanged(int value) {
+    emit brightnessChanged(value); // 发射信号，传递滑块的值
+}
+
+void VideoCaptureFilter::onContrastChanged(int value){
+    emit contrastChanged(value);
+}
+void VideoCaptureFilter::onHueChanged(int value){
+    emit hueChanged(value);
+}
+void VideoCaptureFilter::onSaturabilityChanged(int value){
+    emit saturabilityChanged(value);
+}
+void VideoCaptureFilter::onPlainChanged(int value){
+    emit plainChanged(value);
+}
+void VideoCaptureFilter::onGammaChanged(int value){
+    emit gammaChanged(value);
+}
+void VideoCaptureFilter::onWbChanged(int value){
+    emit wbChanged(value);
+}
+void VideoCaptureFilter::onBacklightChanged(int value){
+    emit backlightChanged(value);
+}
+void VideoCaptureFilter::onGainChanged(int value){
+    emit gainChanged(value);
 }

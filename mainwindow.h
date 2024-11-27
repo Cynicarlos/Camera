@@ -109,6 +109,21 @@ private:
 
     //Help
     QAction *action_Help_About;
+
+    void onVideoCaptureFilterBrightnessChanged(int value); // 处理子窗口信号的槽函数
+    void onVideoCaptureFilterContrastChanged(int value);
+    void onVideoCaptureFilterHueChanged(int value);
+    void onVideoCaptureFilterSaturabilityChanged(int value);
+    void onVideoCaptureFilterPlainChanged(int value);
+    void onVideoCaptureFilterGammaChanged(int value);
+    void onVideoCaptureFilterWbChanged(int value);
+    void onVideoCaptureFilterBacklightChanged(int value);
+    void onVideoCaptureFilterGainChanged(int value);
+
+
+private:
+    VideoCaptureFilter *video_capture_filter;
+
 };
 
 #endif // MAINWINDOW_H

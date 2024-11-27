@@ -90,6 +90,20 @@ void MainWindow::init(){
     connect(action_Photo_Set_Photo_Format, &QAction::triggered, this, &MainWindow::on_Action_Photo_Set_Photo_Format);
 
     connect(action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
+
+
+
+    //算法相关
+    video_capture_filter = new VideoCaptureFilter(this);
+    connect(video_capture_filter, &VideoCaptureFilter::brightnessChanged, this, &MainWindow::onVideoCaptureFilterBrightnessChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::contrastChanged, this, &MainWindow::onVideoCaptureFilterContrastChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::hueChanged, this, &MainWindow::onVideoCaptureFilterHueChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::saturabilityChanged, this, &MainWindow::onVideoCaptureFilterSaturabilityChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::plainChanged, this, &MainWindow::onVideoCaptureFilterPlainChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::gammaChanged, this, &MainWindow::onVideoCaptureFilterGammaChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::wbChanged, this, &MainWindow::onVideoCaptureFilterWbChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::backlightChanged, this, &MainWindow::onVideoCaptureFilterBacklightChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::gainChanged, this, &MainWindow::onVideoCaptureFilterGainChanged);
 }
 
 
@@ -197,7 +211,7 @@ void MainWindow::on_Action_File_Exit(){
 
 void MainWindow::on_Action_Option_Video_Capture_Filter(){
 
-    VideoCaptureFilter *video_capture_filter = new VideoCaptureFilter(this);
+    //video_capture_filter = new VideoCaptureFilter(this);
     video_capture_filter->setWindowModality(Qt::WindowModal); // 设置为模态对话框
     video_capture_filter->show();
 }
@@ -379,3 +393,46 @@ void MainWindow::on_Action_Help_About(){
 //     }
 //     return image;
 // }
+void MainWindow::onVideoCaptureFilterBrightnessChanged(int value) {
+    // 对主窗口中视频帧进行亮度操作...
+    qDebug() << "brightness changed to " << value;
+}
+
+void MainWindow::onVideoCaptureFilterContrastChanged(int value) {
+    // 对主窗口中视频帧进行对比度操作...
+    qDebug() << "contrast changed to " << value;
+}
+void MainWindow::onVideoCaptureFilterHueChanged(int value) {
+    // 对主窗口中视频帧进行色调操作...
+    qDebug() << "hue changed to " << value;
+}
+
+void MainWindow::onVideoCaptureFilterSaturabilityChanged(int value) {
+    // 对主窗口中视频帧进行饱和度操作...
+    qDebug() << "saturability changed to " << value;
+}
+
+void MainWindow::onVideoCaptureFilterPlainChanged(int value) {
+    // 对主窗口中视频帧进行清晰度操作...
+    qDebug() << "plain changed to " << value;
+}
+
+void MainWindow::onVideoCaptureFilterGammaChanged(int value) {
+    // 对主窗口中视频帧进行Gamma操作...
+    qDebug() << "gamma changed to " << value;
+}
+void MainWindow::onVideoCaptureFilterWbChanged(int value) {
+    // 对主窗口中视频帧进行白平衡操作...
+    qDebug() << "wb changed to " << value;
+}
+
+void MainWindow::onVideoCaptureFilterBacklightChanged(int value) {
+    // 对主窗口中视频帧进行逆光对比操作...
+    qDebug() << "backlight changed to " << value;
+}
+
+void MainWindow::onVideoCaptureFilterGainChanged(int value) {
+    // 对主窗口中视频帧进行增益操作...
+    qDebug() << "gain changed to " << value;
+}
+

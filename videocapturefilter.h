@@ -12,6 +12,17 @@ public:
     explicit VideoCaptureFilter(QWidget *parent = nullptr);
     ~VideoCaptureFilter();
 
+signals:
+    void brightnessChanged(int value);
+    void contrastChanged(int value);
+    void hueChanged(int value);
+    void saturabilityChanged(int value);
+    void plainChanged(int value);
+    void gammaChanged(int value);
+    void wbChanged(int value);
+    void backlightChanged(int value);
+    void gainChanged(int value);
+
 private slots:
     void init_Widget();
     void set_General_Slots();
@@ -22,6 +33,16 @@ private slots:
     void on_Amp_Cannel();
     void on_Camera_Control_Yes();
     void on_Camera_Control_Cannel();
+
+    void onBrightnessChanged(int value); // 槽函数，响应滑块值的变化
+    void onContrastChanged(int value);
+    void onHueChanged(int value);
+    void onSaturabilityChanged(int value);
+    void onPlainChanged(int value);
+    void onGammaChanged(int value);
+    void onWbChanged(int value);
+    void onBacklightChanged(int value);
+    void onGainChanged(int value);
 
 
 private:
