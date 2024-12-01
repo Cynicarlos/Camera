@@ -9,6 +9,9 @@
 #include <QCameraDevice>
 #include <QMediaDevices>
 #include <QMessageBox>
+#include <QSettings>
+#include <QDate>
+#include <QWidget>
 #include "videocapturefilter.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -23,6 +26,7 @@ public:
     ~MainWindow();
 
 private slots:
+    void checkTrialPeriod();
     void init();
     void init_Camera();
     void updateFrame();            // 定时更新视频帧
@@ -58,14 +62,42 @@ private slots:
 
 
 private:
+    bool is_owner = true; //开发时为true,发布时改为false
     Ui::MainWindow *ui;
     QMenuBar *menuBar;
     QMenu *menu_devices;
+    VideoCaptureFilter *video_capture_filter;
     QLabel *videoLabel;
     cv::VideoCapture cap;          // OpenCV 摄像头捕获对象
     QTimer *timer;                 // 定时器，用于刷新视频帧
     std::unique_ptr<QList<QCameraDevice>> cameras; //可用的摄像头列表
     int device_id = 0;
+
+
+    //video parameter
+    int brightness;
+    double contrast;
+    int hue;
+    int saturability;
+    int plain;
+    double gamma;
+    int wb;
+    bool WB_ABILITY = true;
+    bool autoWB = false;
+    int backlight;
+    int gain;
+
+    // int brightness = 0;
+    // double contrast  = 32.0;
+    // int hue = 0;
+    // int saturability =64;
+    // int plain = 1;
+    // double gamma = 2.2;
+    // int wb = 5500;
+    // bool WB_ABILITY = true;
+    // bool autoWB = false;
+    // int backlight = 1;
+    // int gain;
 
     //video recorder
     cv::VideoWriter writer;  // 用于视频录制
@@ -110,6 +142,8 @@ private:
     //Help
     QAction *action_Help_About;
 
+    void Get_Amp_Default_Values();
+
     void onVideoCaptureFilterBrightnessChanged(int value); // 处理子窗口信号的槽函数
     void onVideoCaptureFilterContrastChanged(int value);
     void onVideoCaptureFilterHueChanged(int value);
@@ -120,10 +154,9 @@ private:
     void onVideoCaptureFilterBacklightChanged(int value);
     void onVideoCaptureFilterGainChanged(int value);
 
-
-private:
-    VideoCaptureFilter *video_capture_filter;
+    void onVideoCaptureFilterAutoWBChanged(bool value);
 
 };
 
 #endif // MAINWINDOW_H
+

@@ -1,16 +1,19 @@
 #include "mainwindow.h"
+#include "videoProcessing.h"
 #include "ui_mainwindow.h"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+
     ui->setupUi(this);
-
     this->setStyleSheet("QMenu::item:selected {background-color:rgb(234, 243, 253);}");
-
+    // 检查试用期是否结束
+    if(!is_owner){
+        checkTrialPeriod();
+    }
     init();
     init_Camera();
-
 }
 
 MainWindow::~MainWindow()
@@ -18,6 +21,32 @@ MainWindow::~MainWindow()
     cap.release(); // 释放摄像头资源lk.
     delete ui;
 }
+
+void MainWindow::checkTrialPeriod()
+{
+    QSettings settings("IAT", "Camera");
+    bool isFirstRun = settings.value("isFirstRun", true).toBool();
+    if (isFirstRun) {
+        QDate date = QDate::currentDate();
+        settings.setValue("firstRunDate", date.toString(Qt::ISODate));
+        qDebug() << date.year() << date.month() << date.day();
+        settings.setValue("isFirstRun", false);
+    }
+
+    QString firstRunDateStr = settings.value("firstRunDate").toString();
+    QDate firstRunDate = QDate::fromString(firstRunDateStr, Qt::ISODate);
+
+    QDate currentDate = QDate::currentDate();
+    qint64 daysDifference = firstRunDate.daysTo(currentDate);
+    qDebug() << daysDifference;
+    if (daysDifference > 1) { // 假设试用期为1天
+        QMessageBox::warning(this, "试用期结束", "您的试用期已结束，如有需要请联系开发者。");
+
+        // 程序继续运行时可以主动退出
+        QTimer::singleShot(0, &QApplication::quit); // 使用 QTimer::singleShot 延迟退出
+    }
+}
+
 
 void MainWindow::init(){
     // 创建菜单栏
@@ -91,19 +120,6 @@ void MainWindow::init(){
 
     connect(action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
 
-
-
-    //算法相关
-    video_capture_filter = new VideoCaptureFilter(this);
-    connect(video_capture_filter, &VideoCaptureFilter::brightnessChanged, this, &MainWindow::onVideoCaptureFilterBrightnessChanged);
-    connect(video_capture_filter, &VideoCaptureFilter::contrastChanged, this, &MainWindow::onVideoCaptureFilterContrastChanged);
-    connect(video_capture_filter, &VideoCaptureFilter::hueChanged, this, &MainWindow::onVideoCaptureFilterHueChanged);
-    connect(video_capture_filter, &VideoCaptureFilter::saturabilityChanged, this, &MainWindow::onVideoCaptureFilterSaturabilityChanged);
-    connect(video_capture_filter, &VideoCaptureFilter::plainChanged, this, &MainWindow::onVideoCaptureFilterPlainChanged);
-    connect(video_capture_filter, &VideoCaptureFilter::gammaChanged, this, &MainWindow::onVideoCaptureFilterGammaChanged);
-    connect(video_capture_filter, &VideoCaptureFilter::wbChanged, this, &MainWindow::onVideoCaptureFilterWbChanged);
-    connect(video_capture_filter, &VideoCaptureFilter::backlightChanged, this, &MainWindow::onVideoCaptureFilterBacklightChanged);
-    connect(video_capture_filter, &VideoCaptureFilter::gainChanged, this, &MainWindow::onVideoCaptureFilterGainChanged);
 }
 
 
@@ -141,6 +157,8 @@ void MainWindow::init_Camera() {
     connect(timer, &QTimer::timeout, this, &MainWindow::updateFrame);
     timer->start(30);  // 每 30 毫秒更新一次（约 33 FPS）
 }
+
+
 void MainWindow::on_Devices_Selected(int selected_deviceId, QAction *selectedAction) {
     if(device_id == selected_deviceId) return;
     cap.open(selected_deviceId);
@@ -173,13 +191,21 @@ void MainWindow::updateFrame()
 {
     cv::Mat frame;
     cap >> frame; // 从摄像头获取一帧
-
     if (frame.empty())
         return;
-
+    // frame = adjustBrightness(frame,1.0,brightness); //调整亮度
+    // frame = adjustHue(frame,hue);
+    // // frame = adjustSaturation(frame,saturability);
+    if(autoWB)
+    {
+        frame = grayWorld(frame);
+    }
+    if (!WB_ABILITY && !autoWB)
+        frame = adjustColorTemperature(frame,wb);
+    frame = ::adjustSize(frame,1.0);
     cv::cvtColor(frame, frame, cv::COLOR_BGR2RGB); // OpenCV 默认 BGR，需要转换为 RGB
     QPixmap pixmap = QPixmap::fromImage(QImage(frame.data, frame.cols, frame.rows, frame.step, QImage::Format_RGB888));
-    videoLabel->setPixmap(pixmap.scaled(videoLabel->size(), Qt::KeepAspectRatio));
+    videoLabel->setPixmap(pixmap.scaled(videoLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
 void MainWindow::on_Action_File_Set_Capture_Directory(){
@@ -210,10 +236,23 @@ void MainWindow::on_Action_File_Exit(){
 }
 
 void MainWindow::on_Action_Option_Video_Capture_Filter(){
-
-    //video_capture_filter = new VideoCaptureFilter(this);
+    Get_Amp_Default_Values(); // 获取当前摄像头参数值
+    video_capture_filter = new VideoCaptureFilter(this);
+    qDebug() << brightness << contrast << hue << saturability << plain << gamma << backlight << gain;
+    video_capture_filter->Set_Amp_Default_Values(brightness, contrast, hue, saturability, plain, gamma, backlight, gain);
     video_capture_filter->setWindowModality(Qt::WindowModal); // 设置为模态对话框
     video_capture_filter->show();
+    //算法相关
+    //video_capture_filter = new VideoCaptureFilter(this);
+    connect(video_capture_filter, &VideoCaptureFilter::brightnessChanged, this, &MainWindow::onVideoCaptureFilterBrightnessChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::contrastChanged, this, &MainWindow::onVideoCaptureFilterContrastChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::hueChanged, this, &MainWindow::onVideoCaptureFilterHueChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::saturabilityChanged, this, &MainWindow::onVideoCaptureFilterSaturabilityChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::plainChanged, this, &MainWindow::onVideoCaptureFilterPlainChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::gammaChanged, this, &MainWindow::onVideoCaptureFilterGammaChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::wbChanged, this, &MainWindow::onVideoCaptureFilterWbChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::backlightChanged, this, &MainWindow::onVideoCaptureFilterBacklightChanged);
+    connect(video_capture_filter, &VideoCaptureFilter::gainChanged, this, &MainWindow::onVideoCaptureFilterGainChanged);
 }
 
 void MainWindow::on_Action_Option_Video_Capture_pin(){
@@ -340,99 +379,88 @@ void MainWindow::on_Action_Help_About(){
 }
 
 
-// cv::Mat QImage2cvMat(const QImage &image){
-//     cv::Mat mat;
-//     switch(image.format()){
-//         case QImage::Format_Grayscale8: // 灰度图，每个像素点1个字节（8位）
-//             // Mat构造：行数，列数，存储结构，数据，step每行多少字节
-//             mat = cv::Mat(image.height(), image.width(), CV_8UC1, (void*)image.constBits(), image.bytesPerLine());
-//             break;
-//         case QImage::Format_ARGB32: // uint32存储0xAARRGGBB，pc一般小端存储低位在前，所以字节顺序就成了BGRA
-//         case QImage::Format_RGB32: // Alpha为FF
-//         case QImage::Format_ARGB32_Premultiplied:
-//             mat = cv::Mat(image.height(), image.width(), CV_8UC4, (void*)image.constBits(), image.bytesPerLine());
-//             break;
-//         case QImage::Format_RGB888: // RR,GG,BB字节顺序存储
-//             mat = cv::Mat(image.height(), image.width(), CV_8UC3, (void*)image.constBits(), image.bytesPerLine());
-//             // opencv需要转为BGR的字节顺序
-//             cv::cvtColor(mat, mat, cv::COLOR_RGB2BGR);
-//             break;
-//         case QImage::Format_RGBA64: // uint64存储，顺序和Format_ARGB32相反，RGBA
-//             mat = cv::Mat(image.height(), image.width(), CV_16UC4, (void*)image.constBits(), image.bytesPerLine());
-//             // opencv需要转为BGRA的字节顺序
-//             cv::cvtColor(mat, mat, cv::COLOR_RGBA2BGRA);
-//             break;
-//         default:
-//             break;
-//     }
-//     return mat;
-// }
+void MainWindow::Get_Amp_Default_Values(){
+    brightness = cap.get(CAP_PROP_BRIGHTNESS);
+    contrast = cap.get(CAP_PROP_CONTRAST);
+    hue = cap.get(CAP_PROP_HUE);
+    saturability = cap.get(CAP_PROP_SATURATION);
+    plain = cap.get(CAP_PROP_FOCUS);
+    gamma = cap.get(CAP_PROP_GAMMA);
+    backlight = cap.get(CAP_PROP_BACKLIGHT);
+    gain = cap.get(CAP_PROP_GAIN);
+}
 
-// QImage cvMat2QImage(const cv::Mat &mat)
-// {
-//     QImage image;
-//     switch(mat.type())
-//     {
-//     case CV_8UC1:
-//         // QImage构造：数据，宽度，高度，每行多少字节，存储结构
-//         image = QImage((const unsigned char*)mat.data, mat.cols, mat.rows, mat.step, QImage::Format_Grayscale8);
-//         break;
-//     case CV_8UC3:
-//         image = QImage((const unsigned char*)mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
-//         image = image.rgbSwapped(); // BRG转为RGB
-//         // Qt5.14增加了Format_BGR888
-//         // image = QImage((const unsigned char*)mat.data, mat.cols, mat.rows, mat.cols * 3, QImage::Format_BGR888);
-//         break;
-//     case CV_8UC4:
-//         image = QImage((const unsigned char*)mat.data, mat.cols, mat.rows, mat.step, QImage::Format_ARGB32);
-//         break;
-//     case CV_16UC4:
-//         image = QImage((const unsigned char*)mat.data, mat.cols, mat.rows, mat.step, QImage::Format_RGBA64);
-//         image = image.rgbSwapped(); // BRG转为RGB
-//         break;
-//     }
-//     return image;
-// }
 void MainWindow::onVideoCaptureFilterBrightnessChanged(int value) {
     // 对主窗口中视频帧进行亮度操作...
+    // brightness = value;
+    cap.set(CAP_PROP_BRIGHTNESS,value);
     qDebug() << "brightness changed to " << value;
 }
 
 void MainWindow::onVideoCaptureFilterContrastChanged(int value) {
     // 对主窗口中视频帧进行对比度操作...
+    // contrast = value;
+    cap.set(CAP_PROP_CONTRAST,value);
     qDebug() << "contrast changed to " << value;
 }
+
 void MainWindow::onVideoCaptureFilterHueChanged(int value) {
     // 对主窗口中视频帧进行色调操作...
+    // hue =value;
+    cap.set(CAP_PROP_HUE,value);
     qDebug() << "hue changed to " << value;
 }
 
 void MainWindow::onVideoCaptureFilterSaturabilityChanged(int value) {
     // 对主窗口中视频帧进行饱和度操作...
+    // saturability = value;
+    cap.set(CAP_PROP_SATURATION,value);
     qDebug() << "saturability changed to " << value;
 }
 
 void MainWindow::onVideoCaptureFilterPlainChanged(int value) {
     // 对主窗口中视频帧进行清晰度操作...
+    // plain = value;
+    cap.set(CAP_PROP_FOCUS,value);
     qDebug() << "plain changed to " << value;
 }
 
 void MainWindow::onVideoCaptureFilterGammaChanged(int value) {
     // 对主窗口中视频帧进行Gamma操作...
+    cap.set(CAP_PROP_GAMMA,value);
     qDebug() << "gamma changed to " << value;
 }
+
 void MainWindow::onVideoCaptureFilterWbChanged(int value) {
     // 对主窗口中视频帧进行白平衡操作...
+    wb =value;
+    if(WB_ABILITY)
+        cap.set(CAP_PROP_TEMPERATURE,value);
     qDebug() << "wb changed to " << value;
+    // qDebug()<< cap.get(CAP_PROP_WHITE_BALANCE_BLUE_U);
+    // qDebug()<< cap.get(CAP_PROP_WHITE_BALANCE_RED_V);
+    // qDebug()<< cap.get(CAP_PROP_WB_TEMPERATURE);
+    // qDebug()<< cap.get(CAP_PROP_TEMPERATURE);
+    // qDebug()<< cap.get(CAP_PROP_AUTO_WB);
+
 }
 
 void MainWindow::onVideoCaptureFilterBacklightChanged(int value) {
     // 对主窗口中视频帧进行逆光对比操作...
+    cap.set(CAP_PROP_BACKLIGHT,value);
     qDebug() << "backlight changed to " << value;
 }
 
 void MainWindow::onVideoCaptureFilterGainChanged(int value) {
     // 对主窗口中视频帧进行增益操作...
-    qDebug() << "gain changed to " << value;
+    cap.set(CAP_PROP_GAIN,value);
+    qDebug() << "gain changed to " << value ;
 }
+
+void MainWindow::onVideoCaptureFilterAutoWBChanged(bool value)
+{
+    autoWB = value;
+    qDebug()<< value;
+}
+
 

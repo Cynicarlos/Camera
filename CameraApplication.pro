@@ -11,10 +11,12 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    videoProcessing.cpp \
     videocapturefilter.cpp
 
 HEADERS += \
     mainwindow.h \
+    videoProcessing.h \
     videocapturefilter.h
 
 FORMS += \

@@ -11,6 +11,7 @@ class VideoCaptureFilter : public QDialog
 public:
     explicit VideoCaptureFilter(QWidget *parent = nullptr);
     ~VideoCaptureFilter();
+    void Set_Amp_Default_Values(int b, double c, int h, int s, int p, double g, int bl, int gN);
 
 signals:
     void brightnessChanged(int value);
@@ -22,12 +23,13 @@ signals:
     void wbChanged(int value);
     void backlightChanged(int value);
     void gainChanged(int value);
+    void autoWBChanged(bool value);
 
 private slots:
     void init_Widget();
     void set_General_Slots();
     void bind_Slider_Spinbox();
-    void Set_Amp_Default_Values();
+
     void Set_Camera_Control_Default_Values();
     void on_Amp_Yes();
     void on_Amp_Cannel();
@@ -44,9 +46,25 @@ private slots:
     void onBacklightChanged(int value);
     void onGainChanged(int value);
 
+    void onAutoWBChanged(bool value);
+
+    void Amp_Change2Default_Values();
 
 private:
     Ui::VideoCaptureFilter *ui; // 使用Ui::VideoCaptureFilter作为前向声明
+
+    //video parameter
+    int brightness;
+    double contrast;
+    int hue;
+    int saturability;
+    int plain;
+    double gamma;
+    int wb;
+    bool WB_ABILITY = true;
+    bool autoWB = false;
+    int backlight;
+    int gain;
 
     QPushButton * pushButton_amp_default;
     QPushButton * pushButton_amp_yes;

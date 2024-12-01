@@ -6,7 +6,6 @@ VideoCaptureFilter::VideoCaptureFilter(QWidget *parent) : QDialog(parent), ui(ne
     init_Widget();
     set_General_Slots();
     bind_Slider_Spinbox();
-    Set_Amp_Default_Values();
     Set_Camera_Control_Default_Values();
 }
 
@@ -59,6 +58,7 @@ void VideoCaptureFilter::init_Widget()
     spinBox_wb = ui->spinBox_wb;
     checkBox_auto_wb = ui->checkBox_auto_wb;
     connect(Slider_wb, &QSlider::valueChanged, this, &VideoCaptureFilter::onWbChanged);
+    connect(checkBox_auto_wb,&QCheckBox::checkStateChanged,this, &VideoCaptureFilter::onAutoWBChanged);
 
     Slider_backlight = ui->Slider_backlight;
     spinBox_backlight = ui->spinBox_backlight;
@@ -100,45 +100,97 @@ void VideoCaptureFilter::init_Widget()
     checkBox_auto_roll = ui->checkBox_auto_roll;
 }
 
-void VideoCaptureFilter::Set_Amp_Default_Values(){
-    Slider_brightness->setSliderPosition(128);
-    spinBox_brightness->setValue(128);
+
+void VideoCaptureFilter::Set_Amp_Default_Values(int b, double c, int h, int s, int p, double g, int bl, int gN){
+    qDebug() << brightness << contrast << hue << saturability << plain << gamma << backlight << gain;
+    brightness = b;
+    contrast = c;
+    hue = h;
+    saturability = s;
+    plain = p;
+    gamma = g;
+    backlight = bl;
+    gain = gN;
+
+    Slider_brightness->setSliderPosition(brightness);
+    spinBox_brightness->setValue(brightness);
     checkBox_auto_brightness->setCheckable(false);
 
-    Slider_contrast->setSliderPosition(32);
-    spinBox_contrast->setValue(32);
+    Slider_contrast->setSliderPosition(contrast);
+    spinBox_contrast->setValue(contrast);
     checkBox_auto_contrast->setCheckable(false);
 
-    Slider_hue->setSliderPosition(0);
-    spinBox_hue->setValue(0);
+    Slider_hue->setSliderPosition(hue);
+    spinBox_hue->setValue(hue);
     checkBox_auto_hue->setCheckable(false);
 
-    Slider_saturability->setSliderPosition(64);
-    spinBox_saturability->setValue(64);
+    Slider_saturability->setSliderPosition(saturability);
+    spinBox_saturability->setValue(saturability);
     checkBox_auto_saturability->setCheckable(false);
 
-    Slider_plain->setSliderPosition(2);
-    spinBox_plain->setValue(2);
+    Slider_plain->setSliderPosition(plain);
+    spinBox_plain->setValue(plain);
     checkBox_auto_plain->setCheckable(false);
 
-    Slider_gamma->setSliderPosition(120);
-    spinBox_gamma->setValue(120);
+    Slider_gamma->setSliderPosition(gamma);
+    spinBox_gamma->setValue(gamma);
     checkBox_auto_gamma->setCheckable(false);
 
     //Slider_wb->setSliderPosition(4000);
     //spinBox_wb->setValue(4000);
     checkBox_auto_wb->setCheckable(true);
-    checkBox_auto_wb->setChecked(true);//这里要加一个自动白平衡处理
+    checkBox_auto_wb->setChecked(false);//这里要加一个自动白平衡处理
 
-    Slider_backlight->setSliderPosition(1);
-    spinBox_backlight->setValue(1);
+    Slider_backlight->setSliderPosition(backlight);
+    spinBox_backlight->setValue(backlight);
     checkBox_auto_backlight->setCheckable(false);
 
-    Slider_gain->setSliderPosition(0);
-    spinBox_gain->setValue(0);
+    Slider_gain->setSliderPosition(gain);
+    spinBox_gain->setValue(gain);
     checkBox_auto_gain->setCheckable(false);
 
 }
+
+void VideoCaptureFilter::Amp_Change2Default_Values(){
+    Slider_brightness->setSliderPosition(brightness);
+    spinBox_brightness->setValue(brightness);
+    checkBox_auto_brightness->setCheckable(false);
+
+    Slider_contrast->setSliderPosition(contrast);
+    spinBox_contrast->setValue(contrast);
+    checkBox_auto_contrast->setCheckable(false);
+
+    Slider_hue->setSliderPosition(hue);
+    spinBox_hue->setValue(hue);
+    checkBox_auto_hue->setCheckable(false);
+
+    Slider_saturability->setSliderPosition(saturability);
+    spinBox_saturability->setValue(saturability);
+    checkBox_auto_saturability->setCheckable(false);
+
+    Slider_plain->setSliderPosition(plain);
+    spinBox_plain->setValue(plain);
+    checkBox_auto_plain->setCheckable(false);
+
+    Slider_gamma->setSliderPosition(gamma);
+    spinBox_gamma->setValue(gamma);
+    checkBox_auto_gamma->setCheckable(false);
+
+    //Slider_wb->setSliderPosition(4000);
+    //spinBox_wb->setValue(4000);
+    checkBox_auto_wb->setCheckable(true);
+    checkBox_auto_wb->setChecked(false);//这里要加一个自动白平衡处理
+
+    Slider_backlight->setSliderPosition(backlight);
+    spinBox_backlight->setValue(backlight);
+    checkBox_auto_backlight->setCheckable(false);
+
+    Slider_gain->setSliderPosition(gain);
+    spinBox_gain->setValue(gain);
+    checkBox_auto_gain->setCheckable(false);
+
+}
+
 
 void VideoCaptureFilter::Set_Camera_Control_Default_Values(){
 
@@ -193,7 +245,7 @@ void VideoCaptureFilter::on_Camera_Control_Cannel(){
 }
 
 void VideoCaptureFilter::set_General_Slots(){
-    connect(pushButton_amp_default, &QPushButton::clicked, this, &VideoCaptureFilter::Set_Amp_Default_Values);
+    connect(pushButton_amp_default, &QPushButton::clicked, this, &VideoCaptureFilter::Amp_Change2Default_Values);
 
     connect(pushButton_amp_yes, &QPushButton::clicked, this, &VideoCaptureFilter::on_Amp_Yes);
 
@@ -287,4 +339,7 @@ void VideoCaptureFilter::onBacklightChanged(int value){
 }
 void VideoCaptureFilter::onGainChanged(int value){
     emit gainChanged(value);
+}
+void VideoCaptureFilter::onAutoWBChanged(bool value){
+    emit autoWBChanged(value);
 }
