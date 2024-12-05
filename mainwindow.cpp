@@ -253,6 +253,8 @@ void MainWindow::on_Action_Option_Video_Capture_Filter(){
     connect(video_capture_filter, &VideoCaptureFilter::wbChanged, this, &MainWindow::onVideoCaptureFilterWbChanged);
     connect(video_capture_filter, &VideoCaptureFilter::backlightChanged, this, &MainWindow::onVideoCaptureFilterBacklightChanged);
     connect(video_capture_filter, &VideoCaptureFilter::gainChanged, this, &MainWindow::onVideoCaptureFilterGainChanged);
+
+    connect(video_capture_filter, &VideoCaptureFilter::ampYesClicked, this, &MainWindow::onVideoCaptureFilterAmpYesClicked);
 }
 
 void MainWindow::on_Action_Option_Video_Capture_pin(){
@@ -463,4 +465,8 @@ void MainWindow::onVideoCaptureFilterAutoWBChanged(bool value)
     qDebug()<< value;
 }
 
-
+void MainWindow::onVideoCaptureFilterAmpYesClicked(QString h, QString w, QString denoise_level){
+    //点击确认后将H,W,denoise_level以QString类型传到主界面，首先判断输入值是否为空，是否合理...并进行相关操作
+    //可能的返回值为所有的数字组合，需要进一步判断逻辑
+    qDebug() << h << w << denoise_level;
+}

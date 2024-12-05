@@ -2,6 +2,8 @@
 #define VIDEOCAPTUREFILTER_H
 
 #include <QDialog>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 #include "ui_videocapturefilter.h" // 确保这个头文件被正确包含
 
 class VideoCaptureFilter : public QDialog
@@ -24,6 +26,7 @@ signals:
     void backlightChanged(int value);
     void gainChanged(int value);
     void autoWBChanged(bool value);
+    void ampYesClicked(QString h, QString w, QString denoise_level);
 
 private slots:
     void init_Widget();
@@ -47,6 +50,8 @@ private slots:
     void onGainChanged(int value);
 
     void onAutoWBChanged(bool value);
+
+    void onAmpYesClicked();
 
     void Amp_Change2Default_Values();
 
@@ -109,6 +114,10 @@ private:
     QSlider *Slider_gain;
     QSpinBox *spinBox_gain;
     QCheckBox *checkBox_auto_gain;
+
+    QLineEdit *lineEdit_resolution_H;
+    QLineEdit *lineEdit_resolution_W;
+    QLineEdit *lineEdit_denoise_level;
 
     //===========================camera control===========================
     QSlider *Slider_zoom;

@@ -156,6 +156,8 @@ private:
 
     void onVideoCaptureFilterAutoWBChanged(bool value);
 
+    void onVideoCaptureFilterAmpYesClicked(QString h, QString w, QString denoise_level);
+
 };
 
 #endif // MAINWINDOW_H

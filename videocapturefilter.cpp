@@ -18,6 +18,7 @@ void VideoCaptureFilter::init_Widget()
 {
     pushButton_amp_default = ui->pushButton_amp_default;
     pushButton_amp_yes = ui->pushButton_amp_yes;
+    connect(pushButton_amp_yes, &QPushButton::clicked, this, &VideoCaptureFilter::onAmpYesClicked);
     pushButton_amp_cancel = ui->pushButton_amp_cancel;
     pushButton_camera_control_default = ui->pushButton_camera_control_default;
     pushButton_camera_control_yes = ui->pushButton_camera_control_yes;
@@ -69,6 +70,16 @@ void VideoCaptureFilter::init_Widget()
     spinBox_gain = ui->spinBox_gain;
     checkBox_auto_gain = ui->checkBox_auto_gain;
     connect(Slider_gain, &QSlider::valueChanged, this, &VideoCaptureFilter::onGainChanged);
+
+    lineEdit_resolution_H = ui->lineEdit_resolution_H;
+    lineEdit_resolution_H->setValidator(new QRegularExpressionValidator(QRegularExpression("[0-9]+$")));
+
+    lineEdit_resolution_W = ui->lineEdit_resolution_W;
+    lineEdit_resolution_W->setValidator(new QRegularExpressionValidator(QRegularExpression("[0-9]+$")));
+
+    lineEdit_denoise_level = ui->lineEdit_denoise_level;
+    lineEdit_denoise_level->setValidator(new QRegularExpressionValidator(QRegularExpression("[0-9]+$")));
+
 
     //===========================camera control===========================
     Slider_zoom = ui->Slider_zoom;
@@ -343,3 +354,11 @@ void VideoCaptureFilter::onGainChanged(int value){
 void VideoCaptureFilter::onAutoWBChanged(bool value){
     emit autoWBChanged(value);
 }
+
+void VideoCaptureFilter::onAmpYesClicked(){
+    QString h = lineEdit_resolution_H->text();
+    QString w = lineEdit_resolution_W->text();
+    QString denoise_level = lineEdit_denoise_level->text();
+    emit ampYesClicked(h, w, denoise_level);
+}
+
